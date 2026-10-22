@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MGSA Service Management KPI Suite — Independent Portfolio Exercise</title>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;font-size:14px;color:var(--text);background:#fff}
+
+/* ── TOKENS ── */
+:root{
+  --navy:#1B3A5C;--blue:#2E75B6;--purple:#5C3A7A;--teal:#0D6E6E;
+  --navy2:#2E75B6;--teal2:#095555;
+  --text:#1A1A1A;--text1:#1A1A1A;--text2:#595959;--border:#CCCCCC;
+  --bg:#F8F9FA;--bg2:#F2F2F2;
+  --rf:#F4CCCC;--rt:#A61C00;
+  --of:#FCE4D6;--ot:#C55A11;
+  --af:#FFF3CD;--at:#9C6500;
+  --gf:#D9EAD3;--gt:#1E6B3C;
+  --bf:#D6E4F0;--bt:#1B3A5C;
+  --pf:#EDE4F5;--pt:#5C3A7A;
+}
+
+/* ── PAGE SHELL ── */
+.pg{max-width:1280px;margin:0 auto}
+
+/* ── HEADER ── */
+.pg-hdr{background:var(--navy);display:flex;flex-direction:column}
+.hdr-top{display:flex;justify-content:space-between;align-items:center;padding:14px 24px 0}
+.hdr-org{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);letter-spacing:.1em;text-transform:uppercase}
+.hdr-ref{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.04em}
+.hdr-main{padding:12px 24px 0}
+.hdr-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.hdr-sub{font-size:13px;color:rgba(255,255,255,.65);margin-top:4px}
+
+/* ── PURE-CSS TABS ── */
+.tab-radios{display:none}
+.tab-bar{display:flex;padding:0 24px;gap:0;overflow-x:auto;margin-top:12px}
+.tab{padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.5);border-bottom:3px solid transparent;white-space:nowrap;font-family:Arial,Helvetica,sans-serif;transition:color .15s,border-color .15s;user-select:none}
+.tab:hover{color:rgba(255,255,255,.85)}
+.panel{display:none;padding:24px}
+
+#t1:checked ~ .pg-hdr .tab[for="t1"],
+#t2:checked ~ .pg-hdr .tab[for="t2"],
+#t3:checked ~ .pg-hdr .tab[for="t3"],
+#t4:checked ~ .pg-hdr .tab[for="t4"],
+#t5:checked ~ .pg-hdr .tab[for="t5"],
+#t6:checked ~ .pg-hdr .tab[for="t6"],
+#t7:checked ~ .pg-hdr .tab[for="t7"]
+{color:#fff;border-bottom-color:rgba(255,255,255,.9)}
+
+#t1:checked ~ #p1,
+#t2:checked ~ #p2,
+#t3:checked ~ #p3,
+#t4:checked ~ #p4,
+#t5:checked ~ #p5,
+#t6:checked ~ #p6,
+#t7:checked ~ #p7
+{display:block}
+
+/* ── METRIC CARDS ── */
+.mrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
+.mc{background:var(--bg);border:.5px solid var(--border);border-radius:6px;padding:14px 16px}
+.ml{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:4px}
+.mv{font-size:24px;font-weight:700}
+.ms{font-size:11px;color:var(--text2);margin-top:3px}
+
+/* ── SECTION TITLE ── */
+.st{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy);margin-bottom:10px}
+
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:3px;white-space:nowrap}
+.bc{background:var(--rf);color:var(--rt)}
+.bh{background:var(--of);color:var(--ot)}
+.bm{background:var(--af);color:var(--at)}
+.bg{background:var(--gf);color:var(--gt)}
+.bp{background:var(--bf);color:var(--bt)}
+.bpu{background:var(--pf);color:var(--pt)}
+
+/* ── TABLES ── */
+.tw{overflow-x:auto;border:.5px solid var(--border);border-radius:6px;margin-bottom:16px}
+.tw.sh{max-height:460px;overflow-y:auto}
+.dt{width:100%;border-collapse:collapse;font-size:12px}
+.dt th{background:var(--navy);color:#fff;padding:9px 10px;font-weight:700;font-size:11px;text-align:left;position:sticky;top:0;z-index:2;white-space:nowrap;letter-spacing:.05em;text-transform:uppercase}
+.dt td{padding:8px 10px;border-bottom:.5px solid var(--border);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:var(--bg2)}
+.dt td.ctr{text-align:center}
+.dt td.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ── LAYOUT ── */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.cg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.cb{background:var(--bg);border:.5px solid var(--border);border-radius:6px;padding:14px;margin-bottom:16px}
+.cb0{background:var(--bg);border:.5px solid var(--border);border-radius:6px;padding:14px;margin-bottom:0}
+
+/* ── CARDS ── */
+.card{background:#fff;border:.5px solid var(--border);border-left:4px solid;border-radius:6px;padding:12px 14px;margin-bottom:10px}
+.card:last-child{margin-bottom:0}
+.card-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.card-title{font-size:13px;font-weight:700;flex:1}
+.card-sub{font-size:12px;color:var(--text2);line-height:1.55}
+
+/* ── PROGRESS BARS ── */
+.cbar-wrap{margin-bottom:9px}
+.cbar-wrap:last-child{margin-bottom:0}
+.cbar-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.cbar{height:12px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.cbar-fill{height:100%;border-radius:3px}
+
+/* ── STAT ROWS ── */
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:var(--text2);flex:1;padding-right:8px}
+.stat-val{font-weight:700;text-align:right;flex-shrink:0}
+
+/* ── NOTICES ── */
+.notice{border:.5px solid;border-radius:6px;padding:11px 13px;margin-bottom:10px;font-size:12px;line-height:1.6}
+.notice:last-child{margin-bottom:0}
+.notice-r{background:var(--rf);border-color:#E24B4A;color:var(--rt)}
+.notice-a{background:var(--of);border-color:#EF9F27;color:var(--ot)}
+.notice-g{background:var(--gf);border-color:#4CAF50;color:var(--gt)}
+.notice-b{background:var(--bf);border-color:var(--blue);color:var(--bt)}
+.notice-p{background:var(--pf);border-color:var(--purple);color:var(--pt)}
+
+/* ── TIMELINE ── */
+.tl-item{display:flex;gap:12px;padding-bottom:14px;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:'';position:absolute;left:15px;top:28px;bottom:0;width:1px;background:var(--border)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;border:2px solid}
+.tl-body{flex:1;padding-top:4px}
+.tl-head{font-size:12px;font-weight:700;margin-bottom:2px}
+.tl-sub{font-size:11px;color:var(--text2)}
+
+/* ── PILL ROW ── */
+.pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--bg2);border:.5px solid var(--border);color:var(--text2)}
+.pill.act{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ── SLA DIAL (pure CSS) ── */
+.dial-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.dial{width:90px;height:45px;position:relative;overflow:hidden}
+.dial-bg{width:90px;height:90px;border-radius:50%;border:10px solid var(--bg2);position:absolute;top:0;left:0;clip-path:inset(0 0 50% 0)}
+.dial-fill{width:90px;height:90px;border-radius:50%;border:10px solid;position:absolute;top:0;left:0;clip-path:inset(0 0 50% 0)}
+.dial-val{font-size:15px;font-weight:700;line-height:1}
+.dial-lbl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+
+/* ── PORTFOLIO DISCLAIMER ── */
+.portfolio-disclaimer{
+  position:sticky;top:0;z-index:9999;width:100%;
+  background:#7A1F1F;color:#ffffff;
+  font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;
+  padding:10px 16px;box-sizing:border-box;text-align:center;
+  border-bottom:3px solid #4a1212;
+}
+.portfolio-disclaimer strong{font-weight:700}
+.portfolio-disclaimer a{color:#ffffff;text-decoration:underline;font-weight:700}
+@media (max-width:640px){.portfolio-disclaimer{font-size:12px;padding:10px 12px}}
+.portfolio-about{max-width:1100px;margin:32px auto 40px;padding:20px 24px;border:1px solid var(--border);border-left:4px solid #7A1F1F;background:var(--bg);font-size:13px;line-height:1.6;color:var(--text2);scroll-margin-top:90px}
+.portfolio-about h2{font-size:15px;color:var(--navy);margin-bottom:8px}
+.portfolio-about p+p{margin-top:8px}
+.pd-short{display:none}
+.cg>*,.cg3>*,.mrow>*{min-width:0}
+
+/* ── RESPONSIVE ── */
+@media (max-width:900px){
+  .cg3{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .pd-full{display:none}.pd-short{display:inline}
+  .cg,.cg3{grid-template-columns:1fr}
+  .panel{padding:16px}
+  .hdr-top{flex-wrap:wrap;gap:4px;padding:12px 16px 0}
+  .hdr-main{padding:10px 16px 0}.hdr-title{font-size:21px}
+  .tab-bar{padding:0 8px}.tab{padding:12px 14px}
+  .stat-row{gap:10px}.stat-val{text-align:right}
+  .cbar-label{gap:10px}
+  .portfolio-about{margin:24px 16px 32px;padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="portfolio-disclaimer">
+  &#9888; <strong>Fictional company &amp; data &mdash; independent portfolio exercise by Divan Gerber.</strong>
+  <span class="pd-short">Not a role held or real employer information. All figures simulated; real vendor names used illustratively.</span>
+  <span class="pd-full">All organizations, figures, and scenarios on this site are simulated for demonstration purposes.
+  Not a role held or real employer information. This page names several real companies (including SAP, Microsoft, Dimension Data, Clickatell, Netstar, Axis Communications, AWS, Power BI) within an entirely fictional operational scenario. Every SLA figure, ticket, credit, contract date, and risk shown is invented for this exercise and does not describe any real system, outage, or event involving those companies. Pellion Labels and Corvane Data are invented vendors. This is a static design prototype, not a live monitoring feed.</span>
+  <a href="#about-this-portfolio">Read more</a>
+</div>
+
+<input class="tab-radios" type="radio" name="tabs" id="t1" checked>
+<input class="tab-radios" type="radio" name="tabs" id="t2">
+<input class="tab-radios" type="radio" name="tabs" id="t3">
+<input class="tab-radios" type="radio" name="tabs" id="t4">
+<input class="tab-radios" type="radio" name="tabs" id="t5">
+<input class="tab-radios" type="radio" name="tabs" id="t6">
+<input class="tab-radios" type="radio" name="tabs" id="t7">
+
+<div class="pg-hdr">
+  <div class="hdr-top">
+    <div class="hdr-org">MedRetail Group South Africa (Fictional)</div>
+    <div class="hdr-ref">Independent Portfolio Exercise &nbsp;|&nbsp; Simulated period: June 2026</div>
+  </div>
+  <div class="hdr-main">
+    <div class="hdr-title">Service Management KPI Suite</div>
+    <div class="hdr-sub">Simulated snapshot: 22 Jun 2026 08:00 (static data, not a live feed) &bull; SLA, incident, change, capacity, vendor and risk views</div>
+  </div>
+  <div class="tab-bar">
+    <label class="tab" for="t1">Overview</label>
+    <label class="tab" for="t2">SLA Compliance</label>
+    <label class="tab" for="t3">Incident Mgmt</label>
+    <label class="tab" for="t4">Change &amp; Release</label>
+    <label class="tab" for="t5">Team Capacity</label>
+    <label class="tab" for="t6">Vendor SLAs</label>
+    <label class="tab" for="t7">Risks &amp; Actions</label>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PANEL 1 — OVERVIEW
+════════════════════════════════════════════════ -->
+<div class="panel" id="p1">
+<div class="pg">
+
+  <!-- KPI headline row -->
+  <div class="mrow">
+    <div class="mc">
+      <div class="ml">Overall SLA</div>
+      <div class="mv" style="color:var(--gt)">94.2%</div>
+      <div class="ms">&#9650; +1.4pp vs May</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Open Incidents</div>
+      <div class="mv" style="color:var(--ot)">38</div>
+      <div class="ms">P1: 1 &nbsp;|&nbsp; P2: 3</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Avg Resolution</div>
+      <div class="mv">6.4 h</div>
+      <div class="ms">Target: &le;8 h</div>
+    </div>
+    <div class="mc">
+      <div class="ml">MTTR (P1)</div>
+      <div class="mv" style="color:var(--rt)">2.8 h</div>
+      <div class="ms">Target: &le;2 h</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Change Success</div>
+      <div class="mv" style="color:var(--gt)">97.1%</div>
+      <div class="ms">3 failed this month</div>
+    </div>
+    <div class="mc">
+      <div class="ml">CSAT Score</div>
+      <div class="mv" style="color:var(--gt)">4.3/5</div>
+      <div class="ms">&#9650; +0.2 vs May</div>
+    </div>
+  </div>
+
+  <div class="cg">
+    <!-- Status summary -->
+    <div>
+      <div class="cb">
+        <div class="st">Service Health Summary</div>
+        <div class="stat-row"><span class="stat-label">POS &amp; Checkout Services</span><span class="stat-val"><span class="badge bg">Operational</span></span></div>
+        <div class="stat-row"><span class="stat-label">Clinical Dispensing Platform</span><span class="stat-val"><span class="badge bh">Degraded</span></span></div>
+        <div class="stat-row"><span class="stat-label">Retail ERP Integration</span><span class="stat-val"><span class="badge bg">Operational</span></span></div>
+        <div class="stat-row"><span class="stat-label">Warehouse &amp; Logistics</span><span class="stat-val"><span class="badge bg">Operational</span></span></div>
+        <div class="stat-row"><span class="stat-label">Customer Loyalty Platform</span><span class="stat-val"><span class="badge bm">Maintenance</span></span></div>
+        <div class="stat-row"><span class="stat-label">Reporting &amp; Analytics</span><span class="stat-val"><span class="badge bg">Operational</span></span></div>
+        <div class="stat-row"><span class="stat-label">Identity &amp; Access Mgmt</span><span class="stat-val"><span class="badge bg">Operational</span></span></div>
+      </div>
+    </div>
+
+    <!-- Notices -->
+    <div>
+      <div class="cb">
+        <div class="st">Active Alerts — Simulated Snapshot</div>
+        <div class="notice notice-r"><strong>P1 — Clinical Dispensing:</strong> Intermittent label printing failure affecting 14 stores. Bridge team engaged. ETA resolution 13:00.</div>
+        <div class="notice notice-a"><strong>P2 — Loyalty Platform:</strong> Scheduled maintenance window active until 10:00. Customer points redemption suspended.</div>
+        <div class="notice notice-g"><strong>Info:</strong> June DR Test completed successfully. RTO 43 min (target &le;60 min). Details are on the Change &amp; Release tab.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLA compliance by domain -->
+  <div class="cb">
+    <div class="st">SLA Compliance by Service Domain — June 2026</div>
+    <div class="cbar-wrap">
+      <div class="cbar-label"><span>POS &amp; Checkout</span><span style="font-weight:700">99.1%</span></div>
+      <div class="cbar"><div class="cbar-fill" style="width:99.1%;background:var(--teal)"></div></div>
+    </div>
+    <div class="cbar-wrap">
+      <div class="cbar-label"><span>Warehouse &amp; Logistics</span><span style="font-weight:700">98.1%</span></div>
+      <div class="cbar"><div class="cbar-fill" style="width:98.1%;background:var(--teal)"></div></div>
+    </div>
+    <div class="cbar-wrap">
+      <div class="cbar-label"><span>Retail ERP Integration</span><span style="font-weight:700">97.8%</span></div>
+      <div class="cbar"><div class="cbar-fill" style="width:97.8%;background:var(--teal)"></div></div>
+    </div>
+    <div class="cbar-wrap">
+      <div class="cbar-label"><span>Reporting &amp; Analytics</span><span style="font-weight:700">95.5%</span></div>
+      <div class="cbar"><div class="cbar-fill" style="width:95.5%;background:var(--navy2)"></div></div>
+    </div>
+    <div class="cbar-wrap">
+      <div class="cbar-label"><span>Clinical Dispensing</span><span style="font-weight:700;color:var(--ot)">88.2%</span></div>
+      <div class="cbar"><div class="cbar-fill" style="width:88.2%;background:#EF9F27"></div></div>
+    </div>
+    <div class="cbar-wrap">
+      <div class="cbar-label"><span>Customer Loyalty</span><span style="font-weight:700;color:var(--at)">91.0%</span></div>
+      <div class="cbar"><div class="cbar-fill" style="width:91%;background:#EF9F27"></div></div>
+    </div>
+  </div>
+
+  <!-- Month trend table -->
+  <div class="tw sh">
+    <table class="dt">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Overall SLA</th>
+          <th>P1 Incidents</th>
+          <th>Avg MTTR (h)</th>
+          <th>Changes Deployed</th>
+          <th>Failed Changes</th>
+          <th>CSAT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Jan 2026</td><td class="num">91.4%</td><td class="ctr">5</td><td class="num">3.2</td><td class="ctr">42</td><td class="ctr">2</td><td class="num">4.0</td></tr>
+        <tr><td>Feb 2026</td><td class="num">92.1%</td><td class="ctr">4</td><td class="num">2.9</td><td class="ctr">38</td><td class="ctr">1</td><td class="num">4.1</td></tr>
+        <tr><td>Mar 2026</td><td class="num">90.8%</td><td class="ctr">6</td><td class="num">3.5</td><td class="ctr">51</td><td class="ctr">4</td><td class="num">3.9</td></tr>
+        <tr><td>Apr 2026</td><td class="num">93.0%</td><td class="ctr">3</td><td class="num">2.6</td><td class="ctr">45</td><td class="ctr">2</td><td class="num">4.2</td></tr>
+        <tr><td>May 2026</td><td class="num">92.8%</td><td class="ctr">3</td><td class="num">2.7</td><td class="ctr">49</td><td class="ctr">2</td><td class="num">4.1</td></tr>
+        <tr><td><strong>Jun 2026</strong></td><td class="num"><strong>94.2%</strong></td><td class="ctr"><strong>2</strong></td><td class="num" style="color:var(--rt)"><strong>2.8</strong></td><td class="ctr"><strong>54</strong></td><td class="ctr"><strong>3</strong></td><td class="num"><strong>4.3</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PANEL 2 — SLA COMPLIANCE
+════════════════════════════════════════════════ -->
+<div class="panel" id="p2">
+<div class="pg">
+
+  <div class="mrow">
+    <div class="mc">
+      <div class="ml">Overall SLA Achievement</div>
+      <div class="mv" style="color:var(--gt)">94.2%</div>
+      <div class="ms">Target: &ge;95%</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Services In Breach</div>
+      <div class="mv" style="color:var(--rt)">2</div>
+      <div class="ms">Clinical &amp; Loyalty</div>
+    </div>
+    <div class="mc">
+      <div class="ml">SLA Penalties Accrued</div>
+      <div class="mv" style="color:var(--ot)">R 42k</div>
+      <div class="ms">Cap: R 200k/month</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Availability Credits Due</div>
+      <div class="mv">R 18k</div>
+      <div class="ms">2 vendor credits</div>
+    </div>
+    <div class="mc">
+      <div class="ml">P1 Response SLA</div>
+      <div class="mv" style="color:var(--gt)">100%</div>
+      <div class="ms">All P1s responded &le;15 min</div>
+    </div>
+  </div>
+
+  <!-- Detailed SLA table -->
+  <div class="tw sh">
+    <table class="dt">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Tier</th>
+          <th>Target</th>
+          <th>Actual</th>
+          <th>Downtime (h)</th>
+          <th>Incidents</th>
+          <th>Status</th>
+          <th>Penalty</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>POS &amp; Checkout</td><td class="ctr"><span class="badge bp">Gold</span></td>
+          <td class="num">99.5%</td><td class="num" style="color:var(--gt)">99.1%</td>
+          <td class="num">2.1</td><td class="ctr">4</td>
+          <td class="ctr"><span class="badge bm">Near Miss</span></td><td class="num">—</td>
+        </tr>
+        <tr>
+          <td>Clinical Dispensing</td><td class="ctr"><span class="badge bp">Gold</span></td>
+          <td class="num">99.0%</td><td class="num" style="color:var(--rt)">88.2%</td>
+          <td class="num">26.4</td><td class="ctr">9</td>
+          <td class="ctr"><span class="badge bc">Breached</span></td><td class="num">R 28k</td>
+        </tr>
+        <tr>
+          <td>Retail ERP Integration</td><td class="ctr"><span class="badge bm">Silver</span></td>
+          <td class="num">98.0%</td><td class="num" style="color:var(--gt)">97.8%</td>
+          <td class="num">4.8</td><td class="ctr">3</td>
+          <td class="ctr"><span class="badge bm">Near Miss</span></td><td class="num">—</td>
+        </tr>
+        <tr>
+          <td>Warehouse &amp; Logistics</td><td class="ctr"><span class="badge bm">Silver</span></td>
+          <td class="num">98.0%</td><td class="num" style="color:var(--gt)">98.1%</td>
+          <td class="num">8.2</td><td class="ctr">5</td>
+          <td class="ctr"><span class="badge bg">Met</span></td><td class="num">—</td>
+        </tr>
+        <tr>
+          <td>Customer Loyalty</td><td class="ctr"><span class="badge bm">Silver</span></td>
+          <td class="num">95.0%</td><td class="num" style="color:var(--ot)">91.0%</td>
+          <td class="num">19.2</td><td class="ctr">6</td>
+          <td class="ctr"><span class="badge bc">Breached</span></td><td class="num">R 14k</td>
+        </tr>
+        <tr>
+          <td>Reporting &amp; Analytics</td><td class="ctr"><span class="badge">Bronze</span></td>
+          <td class="num">95.0%</td><td class="num" style="color:var(--gt)">95.5%</td>
+          <td class="num">7.6</td><td class="ctr">2</td>
+          <td class="ctr"><span class="badge bg">Met</span></td><td class="num">—</td>
+        </tr>
+        <tr>
+          <td>Identity &amp; Access Mgmt</td><td class="ctr"><span class="badge">Bronze</span></td>
+          <td class="num">99.9%</td><td class="num" style="color:var(--gt)">99.9%</td>
+          <td class="num">0.1</td><td class="ctr">0</td>
+          <td class="ctr"><span class="badge bg">Met</span></td><td class="num">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cg">
+    <div class="cb">
+      <div class="st">SLA Response Times — June Avg</div>
+      <div class="stat-row"><span class="stat-label">P1 — Initial Response</span><span class="stat-val" style="color:var(--gt)">8 min</span></div>
+      <div class="stat-row"><span class="stat-label">P1 — Resolution</span><span class="stat-val" style="color:var(--rt)">2.8 h (target 2 h)</span></div>
+      <div class="stat-row"><span class="stat-label">P2 — Initial Response</span><span class="stat-val" style="color:var(--gt)">22 min</span></div>
+      <div class="stat-row"><span class="stat-label">P2 — Resolution</span><span class="stat-val" style="color:var(--gt)">5.1 h</span></div>
+      <div class="stat-row"><span class="stat-label">P3 — Initial Response</span><span class="stat-val" style="color:var(--gt)">1.2 h</span></div>
+      <div class="stat-row"><span class="stat-label">P3 — Resolution</span><span class="stat-val" style="color:var(--gt)">18.4 h</span></div>
+      <div class="stat-row"><span class="stat-label">P4 — Resolution</span><span class="stat-val" style="color:var(--gt)">3.2 days</span></div>
+    </div>
+    <div class="cb">
+      <div class="st">SLA Breach Root Causes</div>
+      <div class="card" style="border-left-color:#E24B4A">
+        <div class="card-hdr"><span class="card-title">Clinical Dispensing — Label Service</span><span class="badge bc">Root Cause</span></div>
+        <div class="card-sub">Third-party label print API instability (Pellion Cloud). Vendor ticket raised. Workaround: local print mode activated across 14 affected stores.</div>
+      </div>
+      <div class="card" style="border-left-color:#EF9F27">
+        <div class="card-hdr"><span class="card-title">Customer Loyalty — Maintenance Overrun</span><span class="badge bh">Root Cause</span></div>
+        <div class="card-sub">Planned maintenance window exceeded by 4.2 hours due to database schema migration complexity. Change process review scheduled for 26 Jun.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PANEL 3 — INCIDENT MANAGEMENT
+════════════════════════════════════════════════ -->
+<div class="panel" id="p3">
+<div class="pg">
+
+  <div class="mrow">
+    <div class="mc">
+      <div class="ml">Total Incidents (MTD)</div>
+      <div class="mv">129</div>
+      <div class="ms">&#9660; 14 vs May</div>
+    </div>
+    <div class="mc">
+      <div class="ml">P1 Incidents</div>
+      <div class="mv" style="color:var(--rt)">2</div>
+      <div class="ms">1 open, 1 resolved</div>
+    </div>
+    <div class="mc">
+      <div class="ml">P2 Incidents</div>
+      <div class="mv" style="color:var(--ot)">11</div>
+      <div class="ms">3 open</div>
+    </div>
+    <div class="mc">
+      <div class="ml">P3 Incidents</div>
+      <div class="mv">58</div>
+      <div class="ms">12 open</div>
+    </div>
+    <div class="mc">
+      <div class="ml">P4 / Minor</div>
+      <div class="mv">58</div>
+      <div class="ms">22 open</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Reopen Rate</div>
+      <div class="mv" style="color:var(--gt)">3.1%</div>
+      <div class="ms">Target &le;5%</div>
+    </div>
+  </div>
+
+  <!-- Open P1 / P2 -->
+  <div class="cb">
+    <div class="st">Active Priority Incidents</div>
+    <div class="card" style="border-left-color:#E24B4A">
+      <div class="card-hdr">
+        <span class="card-title">INC-20640 — Clinical Dispensing Label Print Failure</span>
+        <span class="badge bc">P1 — Open</span>
+      </div>
+      <div class="card-sub">14 stores affected. Pellion label API returning 503. Bridge team active. Workaround deployed. ETA: 13:00 today.</div>
+    </div>
+    <div class="card" style="border-left-color:#EF9F27">
+      <div class="card-hdr">
+        <span class="card-title">INC-20598 — POS Transaction Timeout (3 Stores)</span>
+        <span class="badge bh">P2 — Open</span>
+      </div>
+      <div class="card-sub">Intermittent connection drops between POS terminals and payment gateway at Sandton, Menlyn, Gateway stores. Network team investigating.</div>
+    </div>
+    <div class="card" style="border-left-color:#EF9F27">
+      <div class="card-hdr">
+        <span class="card-title">INC-20611 — ERP Sync Delay — Replenishment Orders</span>
+        <span class="badge bh">P2 — Open</span>
+      </div>
+      <div class="card-sub">MRP sync lag of 40–90 minutes detected for 6 DC sites. Manual approval process activated. Fix targeted for tonight's maintenance window.</div>
+    </div>
+  </div>
+
+  <!-- Incident volume table -->
+  <div class="tw sh">
+    <table class="dt">
+      <thead>
+        <tr>
+          <th>Incident #</th>
+          <th>Priority</th>
+          <th>Service</th>
+          <th>Title</th>
+          <th>Raised</th>
+          <th>MTTR</th>
+          <th>Status</th>
+          <th>Assignee</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>INC-20640</td><td class="ctr"><span class="badge bc">P1</span></td><td>Clinical Dispensing</td><td>Label Print API 503</td><td>22 Jun 07:14</td><td class="num">—</td><td class="ctr"><span class="badge bc">Open</span></td><td>T. Nkosi</td></tr>
+        <tr><td>INC-20598</td><td class="ctr"><span class="badge bh">P2</span></td><td>POS &amp; Checkout</td><td>Payment Timeout 3 Sites</td><td>21 Jun 15:30</td><td class="num">—</td><td class="ctr"><span class="badge bh">Open</span></td><td>D. Botha</td></tr>
+        <tr><td>INC-20611</td><td class="ctr"><span class="badge bh">P2</span></td><td>ERP Integration</td><td>MRP Sync Lag</td><td>21 Jun 18:02</td><td class="num">—</td><td class="ctr"><span class="badge bh">Open</span></td><td>S. Patel</td></tr>
+        <tr><td>INC-20575</td><td class="ctr"><span class="badge bh">P2</span></td><td>Loyalty Platform</td><td>Points Engine Timeout</td><td>20 Jun 09:10</td><td class="num">3.4 h</td><td class="ctr"><span class="badge bg">Resolved</span></td><td>A. van Wyk</td></tr>
+        <tr><td>INC-20531</td><td class="ctr"><span class="badge bc">P1</span></td><td>Clinical Dispensing</td><td>Dispensing DB Failover</td><td>18 Jun 02:44</td><td class="num">1.9 h</td><td class="ctr"><span class="badge bg">Resolved</span></td><td>T. Nkosi</td></tr>
+        <tr><td>INC-20490</td><td class="ctr"><span class="badge bh">P2</span></td><td>Warehouse</td><td>RFID Scanner Outage DC3</td><td>16 Jun 11:22</td><td class="num">5.7 h</td><td class="ctr"><span class="badge bg">Resolved</span></td><td>L. Mthembu</td></tr>
+        <tr><td>INC-20461</td><td class="ctr"><span class="badge bm">P3</span></td><td>Reporting</td><td>Dashboard Slow Load</td><td>14 Jun 08:00</td><td class="num">22.0 h</td><td class="ctr"><span class="badge bg">Resolved</span></td><td>R. Dlamini</td></tr>
+        <tr><td>INC-20440</td><td class="ctr"><span class="badge bm">P3</span></td><td>IAM</td><td>Password Reset Portal Error</td><td>13 Jun 14:15</td><td class="num">4.1 h</td><td class="ctr"><span class="badge bg">Resolved</span></td><td>J. Smith</td></tr>
+        <tr><td>INC-20415</td><td class="ctr"><span class="badge bh">P2</span></td><td>Loyalty Platform</td><td>Coupon Redemption Failure</td><td>11 Jun 10:30</td><td class="num">6.2 h</td><td class="ctr"><span class="badge bg">Resolved</span></td><td>A. van Wyk</td></tr>
+        <tr><td>INC-20388</td><td class="ctr"><span class="badge bm">P3</span></td><td>POS &amp; Checkout</td><td>Receipt Printer Offline (8 stores)</td><td>10 Jun 09:45</td><td class="num">11.3 h</td><td class="ctr"><span class="badge bg">Resolved</span></td><td>D. Botha</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cg">
+    <div class="cb">
+      <div class="st">Incidents by Service Domain (MTD)</div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Clinical Dispensing</span><span style="font-weight:700">34</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:100%;background:var(--rt)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Customer Loyalty</span><span style="font-weight:700">28</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:82%;background:#EF9F27"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>POS &amp; Checkout</span><span style="font-weight:700">24</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:71%;background:var(--navy2)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Warehouse &amp; Logistics</span><span style="font-weight:700">18</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:53%;background:var(--teal)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>ERP Integration</span><span style="font-weight:700">14</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:41%;background:var(--teal2)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Reporting / Analytics</span><span style="font-weight:700">7</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:21%;background:#888"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>IAM</span><span style="font-weight:700">4</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:12%;background:#aaa"></div></div>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="st">Incident Category Breakdown (MTD)</div>
+      <div class="stat-row"><span class="stat-label">Infrastructure / Hardware</span><span class="stat-val">41</span></div>
+      <div class="stat-row"><span class="stat-label">Application / Software</span><span class="stat-val">36</span></div>
+      <div class="stat-row"><span class="stat-label">Network / Connectivity</span><span class="stat-val">22</span></div>
+      <div class="stat-row"><span class="stat-label">Third-party / Vendor</span><span class="stat-val">18</span></div>
+      <div class="stat-row"><span class="stat-label">Configuration / Change</span><span class="stat-val">8</span></div>
+      <div class="stat-row"><span class="stat-label">User / Access</span><span class="stat-val">4</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PANEL 4 — CHANGE & RELEASE
+════════════════════════════════════════════════ -->
+<div class="panel" id="p4">
+<div class="pg">
+
+  <div class="mrow">
+    <div class="mc">
+      <div class="ml">Changes Deployed (MTD)</div>
+      <div class="mv">54</div>
+      <div class="ms">&#9650; +5 vs May</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Successful Changes</div>
+      <div class="mv" style="color:var(--gt)">51</div>
+      <div class="ms">97.1% success rate</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Failed Changes</div>
+      <div class="mv" style="color:var(--rt)">3</div>
+      <div class="ms">1 P1 rollback</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Emergency Changes</div>
+      <div class="mv" style="color:var(--ot)">4</div>
+      <div class="ms">All CAB approved</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Upcoming (7 days)</div>
+      <div class="mv">12</div>
+      <div class="ms">3 high-impact</div>
+    </div>
+    <div class="mc">
+      <div class="ml">DR Test Result</div>
+      <div class="mv" style="color:var(--gt)">Pass</div>
+      <div class="ms">RTO: 43 min</div>
+    </div>
+  </div>
+
+  <!-- Change log table -->
+  <div class="cb">
+    <div class="st">Change Log — June 2026</div>
+    <div class="tw sh">
+      <table class="dt">
+        <thead>
+          <tr>
+            <th>CHG #</th>
+            <th>Type</th>
+            <th>Service</th>
+            <th>Description</th>
+            <th>Deployed</th>
+            <th>Result</th>
+            <th>Rollback</th>
+            <th>Owner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>CHG-8841</td><td class="ctr"><span class="badge bc">Emergency</span></td><td>Clinical Dispensing</td><td>Label API failover patch</td><td>22 Jun 06:00</td><td class="ctr"><span class="badge bg">Success</span></td><td class="ctr">N</td><td>T. Nkosi</td></tr>
+          <tr><td>CHG-8822</td><td class="ctr"><span class="badge bp">Standard</span></td><td>POS &amp; Checkout</td><td>Terminal firmware v3.14.2</td><td>20 Jun 22:00</td><td class="ctr"><span class="badge bg">Success</span></td><td class="ctr">N</td><td>D. Botha</td></tr>
+          <tr><td>CHG-8809</td><td class="ctr"><span class="badge bh">Normal</span></td><td>Loyalty Platform</td><td>DB schema migration v2.8</td><td>19 Jun 00:00</td><td class="ctr"><span class="badge bc">Failed</span></td><td class="ctr" style="color:var(--rt)">Y</td><td>A. van Wyk</td></tr>
+          <tr><td>CHG-8802</td><td class="ctr"><span class="badge bp">Standard</span></td><td>ERP Integration</td><td>SAP PI patch bundle</td><td>17 Jun 21:00</td><td class="ctr"><span class="badge bg">Success</span></td><td class="ctr">N</td><td>S. Patel</td></tr>
+          <tr><td>CHG-8790</td><td class="ctr"><span class="badge bc">Emergency</span></td><td>Clinical Dispensing</td><td>DB failover recovery</td><td>18 Jun 04:00</td><td class="ctr"><span class="badge bg">Success</span></td><td class="ctr">N</td><td>T. Nkosi</td></tr>
+          <tr><td>CHG-8775</td><td class="ctr"><span class="badge bh">Normal</span></td><td>Warehouse</td><td>RFID middleware update</td><td>15 Jun 22:00</td><td class="ctr"><span class="badge bc">Failed</span></td><td class="ctr" style="color:var(--rt)">Y</td><td>L. Mthembu</td></tr>
+          <tr><td>CHG-8762</td><td class="ctr"><span class="badge bp">Standard</span></td><td>IAM</td><td>AD connector refresh</td><td>14 Jun 02:00</td><td class="ctr"><span class="badge bg">Success</span></td><td class="ctr">N</td><td>J. Smith</td></tr>
+          <tr><td>CHG-8744</td><td class="ctr"><span class="badge bh">Normal</span></td><td>Reporting</td><td>Power BI gateway upgrade</td><td>12 Jun 20:00</td><td class="ctr"><span class="badge bc">Failed</span></td><td class="ctr" style="color:var(--rt)">Y</td><td>R. Dlamini</td></tr>
+          <tr><td>CHG-8730</td><td class="ctr"><span class="badge bp">Standard</span></td><td>POS &amp; Checkout</td><td>Payment gateway cert renewal</td><td>10 Jun 03:00</td><td class="ctr"><span class="badge bg">Success</span></td><td class="ctr">N</td><td>D. Botha</td></tr>
+          <tr><td>CHG-8710</td><td class="ctr"><span class="badge bpu">Pre-approved</span></td><td>IAM</td><td>Routine patching — June batch</td><td>08 Jun 02:00</td><td class="ctr"><span class="badge bg">Success</span></td><td class="ctr">N</td><td>J. Smith</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Upcoming changes + DR -->
+  <div class="cg">
+    <div class="cb">
+      <div class="st">Upcoming High-Impact Changes (7 days)</div>
+      <div class="card" style="border-left-color:var(--navy2)">
+        <div class="card-hdr"><span class="card-title">CHG-8860 — Loyalty Platform DB Migration (Retry)</span><span class="badge bh">Normal</span></div>
+        <div class="card-sub">Rescheduled for 25 Jun 00:00–04:00. Extended window approved. Rollback plan reviewed by CAB. Customer comms sent.</div>
+      </div>
+      <div class="card" style="border-left-color:var(--teal)">
+        <div class="card-hdr"><span class="card-title">CHG-8851 — Clinical Dispensing App v4.6.1</span><span class="badge bh">Normal</span></div>
+        <div class="card-sub">Dispensing engine upgrade. Addresses label API stability. Phased rollout: 26 Jun pilot stores, 28 Jun full estate.</div>
+      </div>
+      <div class="card" style="border-left-color:var(--teal)">
+        <div class="card-hdr"><span class="card-title">CHG-8848 — Network Refresh — DC1 Core Switches</span><span class="badge bh">Normal</span></div>
+        <div class="card-sub">27 Jun 22:00–02:00. Redundant path maintained. Minimal impact expected. Network team on standby.</div>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="st">Disaster Recovery — June Test Results</div>
+      <div class="notice notice-g"><strong>DR Test PASSED — 14 Jun 2026.</strong> Full failover to DR site completed. All critical services restored within RTO.</div>
+      <div class="stat-row"><span class="stat-label">RTO Target</span><span class="stat-val">&le; 60 min</span></div>
+      <div class="stat-row"><span class="stat-label">RTO Achieved</span><span class="stat-val" style="color:var(--gt)">43 min</span></div>
+      <div class="stat-row"><span class="stat-label">RPO Target</span><span class="stat-val">&le; 4 hours</span></div>
+      <div class="stat-row"><span class="stat-label">RPO Achieved</span><span class="stat-val" style="color:var(--gt)">1.2 hours</span></div>
+      <div class="stat-row"><span class="stat-label">Services Tested</span><span class="stat-val">7 / 7</span></div>
+      <div class="stat-row"><span class="stat-label">Exceptions Raised</span><span class="stat-val">1 minor</span></div>
+      <div class="stat-row"><span class="stat-label">Next DR Test</span><span class="stat-val">Sep 2026</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PANEL 5 — TEAM CAPACITY
+════════════════════════════════════════════════ -->
+<div class="panel" id="p5">
+<div class="pg">
+
+  <div class="mrow">
+    <div class="mc">
+      <div class="ml">Total FTE</div>
+      <div class="mv">42</div>
+      <div class="ms">Incl. 4 contractors</div>
+    </div>
+    <div class="mc">
+      <div class="ml">On Leave (MTD)</div>
+      <div class="mv">5</div>
+      <div class="ms">2 unplanned</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Open Positions</div>
+      <div class="mv" style="color:var(--ot)">4</div>
+      <div class="ms">2 in final interview</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Avg Ticket Load</div>
+      <div class="mv">8.3</div>
+      <div class="ms">Per engineer / week</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Overtime Hours (MTD)</div>
+      <div class="mv" style="color:var(--ot)">112 h</div>
+      <div class="ms">&#9650; +38 h vs May</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Training Completed</div>
+      <div class="mv" style="color:var(--gt)">18</div>
+      <div class="ms">Certs this quarter</div>
+    </div>
+  </div>
+
+  <div class="cg">
+    <div class="cb">
+      <div class="st">Team Capacity by Function</div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Service Desk (L1)</span><span style="font-weight:700">12 FTE — 91% utilised</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:91%;background:var(--teal)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Application Support (L2)</span><span style="font-weight:700">10 FTE — 88% utilised</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:88%;background:var(--teal)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Infrastructure Ops</span><span style="font-weight:700">8 FTE — 95% utilised</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:95%;background:#EF9F27"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Change &amp; Release</span><span style="font-weight:700">4 FTE — 80% utilised</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:80%;background:var(--navy2)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Security Ops</span><span style="font-weight:700">5 FTE — 72% utilised</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:72%;background:var(--navy2)"></div></div>
+      </div>
+      <div class="cbar-wrap">
+        <div class="cbar-label"><span>Service Management</span><span style="font-weight:700">3 FTE — 85% utilised</span></div>
+        <div class="cbar"><div class="cbar-fill" style="width:85%;background:#888"></div></div>
+      </div>
+    </div>
+
+    <div class="cb">
+      <div class="st">Open Positions Pipeline</div>
+      <div class="card" style="border-left-color:var(--ot)">
+        <div class="card-hdr"><span class="card-title">Senior Infrastructure Engineer</span><span class="badge bh">Final Interview</span></div>
+        <div class="card-sub">2 candidates in final round. Offer target: 26 Jun. Critical hire — infra team at 95% utilisation.</div>
+      </div>
+      <div class="card" style="border-left-color:var(--ot)">
+        <div class="card-hdr"><span class="card-title">L2 Application Support Analyst</span><span class="badge bh">Final Interview</span></div>
+        <div class="card-sub">3 candidates shortlisted. Clinical dispensing focus preferred. Offer target: 30 Jun.</div>
+      </div>
+      <div class="card" style="border-left-color:#888">
+        <div class="card-hdr"><span class="card-title">Service Desk Agent (x2)</span><span class="badge bm">Advertising</span></div>
+        <div class="card-sub">JD published. Applications close 5 Jul. Target start: Aug 2026.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Training & certs -->
+  <div class="cb">
+    <div class="st">Training &amp; Certification Activity — Q2 2026</div>
+    <div class="tw">
+      <table class="dt">
+        <thead>
+          <tr>
+            <th>Staff Member</th>
+            <th>Team</th>
+            <th>Certification</th>
+            <th>Provider</th>
+            <th>Completed</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>T. Nkosi</td><td>Infra Ops</td><td>ITIL 4 Managing Professional</td><td>PeopleCert</td><td>May 2026</td><td class="ctr"><span class="badge bg">Passed</span></td></tr>
+          <tr><td>D. Botha</td><td>App Support</td><td>AWS SysOps Administrator</td><td>Amazon</td><td>Apr 2026</td><td class="ctr"><span class="badge bg">Passed</span></td></tr>
+          <tr><td>S. Patel</td><td>App Support</td><td>SAP BASIS Associate</td><td>SAP</td><td>Jun 2026</td><td class="ctr"><span class="badge bg">Passed</span></td></tr>
+          <tr><td>A. van Wyk</td><td>Service Mgmt</td><td>PRINCE2 Practitioner</td><td>PeopleCert</td><td>Jun 2026</td><td class="ctr"><span class="badge bg">Passed</span></td></tr>
+          <tr><td>L. Mthembu</td><td>Infra Ops</td><td>CompTIA Network+</td><td>CompTIA</td><td>—</td><td class="ctr"><span class="badge bm">In Progress</span></td></tr>
+          <tr><td>R. Dlamini</td><td>App Support</td><td>Power BI Data Analyst</td><td>Microsoft</td><td>—</td><td class="ctr"><span class="badge bm">In Progress</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PANEL 6 — VENDOR SLAs
+════════════════════════════════════════════════ -->
+<div class="panel" id="p6">
+<div class="pg">
+
+  <div class="mrow">
+    <div class="mc">
+      <div class="ml">Vendors Monitored</div>
+      <div class="mv">8</div>
+      <div class="ms">Critical tier</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Vendors In Breach</div>
+      <div class="mv" style="color:var(--rt)">2</div>
+      <div class="ms">Pellion, Corvane</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Credits Receivable</div>
+      <div class="mv" style="color:var(--gt)">R 18k</div>
+      <div class="ms">2 claims raised</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Open Vendor Tickets</div>
+      <div class="mv">14</div>
+      <div class="ms">3 escalated</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Contract Reviews Due</div>
+      <div class="mv" style="color:var(--ot)">2</div>
+      <div class="ms">Jul / Aug 2026</div>
+    </div>
+  </div>
+
+  <div class="tw sh">
+    <table class="dt">
+      <thead>
+        <tr>
+          <th>Vendor</th>
+          <th>Service</th>
+          <th>Contract SLA</th>
+          <th>Actual (Jun)</th>
+          <th>Open Tickets</th>
+          <th>Status</th>
+          <th>Credit</th>
+          <th>Contract Expiry</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Pellion Labels</strong></td><td>Label Print Cloud API</td>
+          <td class="num">99.5%</td><td class="num" style="color:var(--rt)">87.4%</td>
+          <td class="ctr">3</td>
+          <td class="ctr"><span class="badge bc">Breached</span></td>
+          <td class="num" style="color:var(--gt)">R 12k</td>
+          <td>Mar 2027</td>
+        </tr>
+        <tr>
+          <td><strong>Corvane Data</strong></td><td>DB Cloud Support</td>
+          <td class="num">99.9%</td><td class="num" style="color:var(--ot)">99.1%</td>
+          <td class="ctr">2</td>
+          <td class="ctr"><span class="badge bc">Breached</span></td>
+          <td class="num" style="color:var(--gt)">R 6k</td>
+          <td>Aug 2026</td>
+        </tr>
+        <tr>
+          <td><strong>Dimension Data</strong></td><td>Network Managed Services</td>
+          <td class="num">99.5%</td><td class="num" style="color:var(--gt)">99.7%</td>
+          <td class="ctr">1</td>
+          <td class="ctr"><span class="badge bg">Met</span></td>
+          <td class="num">—</td>
+          <td>Dec 2026</td>
+        </tr>
+        <tr>
+          <td><strong>SAP SE</strong></td><td>ERP AMS Support</td>
+          <td class="num">98.0%</td><td class="num" style="color:var(--gt)">98.9%</td>
+          <td class="ctr">4</td>
+          <td class="ctr"><span class="badge bg">Met</span></td>
+          <td class="num">—</td>
+          <td>Jun 2028</td>
+        </tr>
+        <tr>
+          <td><strong>Microsoft</strong></td><td>Azure IaaS &amp; M365</td>
+          <td class="num">99.9%</td><td class="num" style="color:var(--gt)">99.98%</td>
+          <td class="ctr">1</td>
+          <td class="ctr"><span class="badge bg">Met</span></td>
+          <td class="num">—</td>
+          <td>Jan 2028</td>
+        </tr>
+        <tr>
+          <td><strong>Netstar / Tracker</strong></td><td>Fleet Telematics</td>
+          <td class="num">97.0%</td><td class="num" style="color:var(--gt)">98.2%</td>
+          <td class="ctr">0</td>
+          <td class="ctr"><span class="badge bg">Met</span></td>
+          <td class="num">—</td>
+          <td>Jul 2026</td>
+        </tr>
+        <tr>
+          <td><strong>Clickatell</strong></td><td>SMS / Notification Gateway</td>
+          <td class="num">99.0%</td><td class="num" style="color:var(--gt)">99.4%</td>
+          <td class="ctr">2</td>
+          <td class="ctr"><span class="badge bg">Met</span></td>
+          <td class="num">—</td>
+          <td>Nov 2027</td>
+        </tr>
+        <tr>
+          <td><strong>Axis Communications</strong></td><td>CCTV &amp; Access Control</td>
+          <td class="num">95.0%</td><td class="num" style="color:var(--gt)">96.1%</td>
+          <td class="ctr">1</td>
+          <td class="ctr"><span class="badge bg">Met</span></td>
+          <td class="num">—</td>
+          <td>Feb 2027</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cg">
+    <div class="cb">
+      <div class="st">Vendor Escalations</div>
+      <div class="card" style="border-left-color:#E24B4A">
+        <div class="card-hdr"><span class="card-title">Pellion — Label API SLA Breach</span><span class="badge bc">Escalated</span></div>
+        <div class="card-sub">Formal SLA breach notice issued 21 Jun. Credit claim R 12k raised. Executive escalation scheduled 24 Jun. Root cause report requested by 25 Jun.</div>
+      </div>
+      <div class="card" style="border-left-color:#EF9F27">
+        <div class="card-hdr"><span class="card-title">Corvane — Contract Renewal (Aug 2026)</span><span class="badge bh">Action Required</span></div>
+        <div class="card-sub">Contract expires Aug 2026. Renewal negotiation commenced. Benchmarking against AWS RDS underway. Decision required by 10 Jul.</div>
+      </div>
+      <div class="card" style="border-left-color:var(--at)">
+        <div class="card-hdr"><span class="card-title">Netstar — Contract Renewal (Jul 2026)</span><span class="badge bm">Due Soon</span></div>
+        <div class="card-sub">Fleet contract expires 31 Jul. Review meeting set for 25 Jun. Likely to extend 12 months with revised pricing.</div>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="st">Vendor Ticket Ageing</div>
+      <div class="stat-row"><span class="stat-label">0–3 days</span><span class="stat-val">6</span></div>
+      <div class="stat-row"><span class="stat-label">4–7 days</span><span class="stat-val">4</span></div>
+      <div class="stat-row"><span class="stat-label">8–14 days</span><span class="stat-val">3</span></div>
+      <div class="stat-row"><span class="stat-label">15–30 days</span><span class="stat-val">1</span></div>
+      <div class="stat-row"><span class="stat-label">&gt; 30 days</span><span class="stat-val" style="color:var(--rt)">0</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PANEL 7 — RISKS & ACTIONS
+════════════════════════════════════════════════ -->
+<div class="panel" id="p7">
+<div class="pg">
+
+  <div class="mrow">
+    <div class="mc">
+      <div class="ml">Open Risks</div>
+      <div class="mv">11</div>
+      <div class="ms">3 critical</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Critical Risks</div>
+      <div class="mv" style="color:var(--rt)">3</div>
+      <div class="ms">Escalated to CIO</div>
+    </div>
+    <div class="mc">
+      <div class="ml">High Risks</div>
+      <div class="mv" style="color:var(--ot)">4</div>
+      <div class="ms">Owner assigned</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Open Actions</div>
+      <div class="mv">24</div>
+      <div class="ms">6 overdue</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Actions Overdue</div>
+      <div class="mv" style="color:var(--rt)">6</div>
+      <div class="ms">Escalated</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Risks Closed (MTD)</div>
+      <div class="mv" style="color:var(--gt)">3</div>
+      <div class="ms">Mitigated this month</div>
+    </div>
+  </div>
+
+  <!-- Risk register -->
+  <div class="tw sh">
+    <table class="dt">
+      <thead>
+        <tr>
+          <th>Risk ID</th>
+          <th>Rating</th>
+          <th>Domain</th>
+          <th>Risk Description</th>
+          <th>Likelihood</th>
+          <th>Impact</th>
+          <th>Owner</th>
+          <th>Target Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>RSK-041</td>
+          <td class="ctr"><span class="badge bc">Critical</span></td>
+          <td>Clinical Dispensing</td>
+          <td>Label API vendor single point of failure</td>
+          <td class="ctr">High</td><td class="ctr">High</td>
+          <td>T. Nkosi</td><td>30 Jun</td>
+          <td class="ctr"><span class="badge bh">In Progress</span></td>
+        </tr>
+        <tr>
+          <td>RSK-038</td>
+          <td class="ctr"><span class="badge bc">Critical</span></td>
+          <td>Infra / DB</td>
+          <td>Corvane DB contract expiry — no signed renewal</td>
+          <td class="ctr">High</td><td class="ctr">High</td>
+          <td>S. Patel</td><td>10 Jul</td>
+          <td class="ctr"><span class="badge bh">In Progress</span></td>
+        </tr>
+        <tr>
+          <td>RSK-035</td>
+          <td class="ctr"><span class="badge bc">Critical</span></td>
+          <td>Team Capacity</td>
+          <td>Infra team at 95% capacity — 1 open FTE unfilled</td>
+          <td class="ctr">High</td><td class="ctr">High</td>
+          <td>HR / CTO</td><td>26 Jun</td>
+          <td class="ctr"><span class="badge bh">In Progress</span></td>
+        </tr>
+        <tr>
+          <td>RSK-029</td>
+          <td class="ctr"><span class="badge bh">High</span></td>
+          <td>Change Mgmt</td>
+          <td>Loyalty DB migration retry — repeat failure risk</td>
+          <td class="ctr">Medium</td><td class="ctr">High</td>
+          <td>A. van Wyk</td><td>25 Jun</td>
+          <td class="ctr"><span class="badge bm">Pending</span></td>
+        </tr>
+        <tr>
+          <td>RSK-027</td>
+          <td class="ctr"><span class="badge bh">High</span></td>
+          <td>Network</td>
+          <td>DC1 core switch end-of-support (EoS Aug 2026)</td>
+          <td class="ctr">Medium</td><td class="ctr">High</td>
+          <td>L. Mthembu</td><td>31 Jul</td>
+          <td class="ctr"><span class="badge bm">Pending</span></td>
+        </tr>
+        <tr>
+          <td>RSK-024</td>
+          <td class="ctr"><span class="badge bh">High</span></td>
+          <td>Compliance</td>
+          <td>POPIA audit — 2 open data handling findings</td>
+          <td class="ctr">Low</td><td class="ctr">High</td>
+          <td>J. Smith</td><td>15 Jul</td>
+          <td class="ctr"><span class="badge bh">In Progress</span></td>
+        </tr>
+        <tr>
+          <td>RSK-019</td>
+          <td class="ctr"><span class="badge bm">Medium</span></td>
+          <td>Vendor</td>
+          <td>Netstar fleet contract lapse risk</td>
+          <td class="ctr">Low</td><td class="ctr">Medium</td>
+          <td>A. van Wyk</td><td>25 Jun</td>
+          <td class="ctr"><span class="badge bm">Pending</span></td>
+        </tr>
+        <tr>
+          <td>RSK-014</td>
+          <td class="ctr"><span class="badge bm">Medium</span></td>
+          <td>Security</td>
+          <td>Unpatched vulnerabilities — 3 servers &gt;60 days</td>
+          <td class="ctr">Medium</td><td class="ctr">Medium</td>
+          <td>J. Smith</td><td>28 Jun</td>
+          <td class="ctr"><span class="badge bh">In Progress</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Action items -->
+  <div class="cb">
+    <div class="st">Action Items — June 2026</div>
+    <div class="tw">
+      <table class="dt">
+        <thead>
+          <tr>
+            <th>Action #</th>
+            <th>Priority</th>
+            <th>Description</th>
+            <th>Owner</th>
+            <th>Due Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>ACT-201</td><td class="ctr"><span class="badge bc">Critical</span></td><td>Deploy redundant label print path (Pellion fallback)</td><td>T. Nkosi</td><td>25 Jun</td><td class="ctr"><span class="badge bh">In Progress</span></td></tr>
+          <tr><td>ACT-202</td><td class="ctr"><span class="badge bc">Critical</span></td><td>Finalise Corvane contract renewal position paper</td><td>S. Patel</td><td>30 Jun</td><td class="ctr"><span class="badge bh">In Progress</span></td></tr>
+          <tr><td>ACT-203</td><td class="ctr"><span class="badge bc">Critical</span></td><td>Complete Senior Infra Engineer hiring (offer stage)</td><td>HR</td><td>26 Jun</td><td class="ctr"><span class="badge bh">In Progress</span></td></tr>
+          <tr><td>ACT-196</td><td class="ctr"><span class="badge bh">High</span></td><td>CAB review of failed change process (CHG-8809)</td><td>A. van Wyk</td><td>26 Jun</td><td class="ctr"><span class="badge bm">Pending</span></td></tr>
+          <tr><td>ACT-193</td><td class="ctr"><span class="badge bh">High</span></td><td>Patch 3 overdue servers — remediate CVEs</td><td>J. Smith</td><td>28 Jun</td><td class="ctr"><span class="badge bh">In Progress</span></td></tr>
+          <tr><td>ACT-188</td><td class="ctr"><span class="badge bh">High</span></td><td>POPIA findings — update data retention policy docs</td><td>J. Smith</td><td>15 Jul</td><td class="ctr"><span class="badge bm">Pending</span></td></tr>
+          <tr><td>ACT-181</td><td class="ctr"><span class="badge bm">Medium</span></td><td>Netstar contract renewal — initiate negotiation</td><td>A. van Wyk</td><td>25 Jun</td><td class="ctr"><span class="badge bm">Pending</span></td></tr>
+          <tr><td>ACT-175</td><td class="ctr"><span class="badge bm">Medium</span></td><td>DC1 switch replacement — submit capex motivation</td><td>L. Mthembu</td><td>10 Jul</td><td class="ctr"><span class="badge bm">Pending</span></td></tr>
+          <tr><td>ACT-169</td><td class="ctr"><span class="badge bm">Medium</span></td><td>Update DR plan post June test — document exception</td><td>T. Nkosi</td><td>30 Jun</td><td class="ctr"><span class="badge bh">In Progress</span></td></tr>
+          <tr><td>ACT-155</td><td class="ctr"><span class="badge">Low</span></td><td>Archive Q1 2026 incident reports to SharePoint</td><td>R. Dlamini</td><td>19 Jun</td><td class="ctr"><span class="badge bc">Overdue</span></td></tr>
+          <tr><td>ACT-148</td><td class="ctr"><span class="badge">Low</span></td><td>Update service catalogue — add new warehouse integration</td><td>A. van Wyk</td><td>15 Jun</td><td class="ctr"><span class="badge bc">Overdue</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ABOUT THIS PORTFOLIO -->
+<section class="portfolio-about" id="about-this-portfolio">
+  <h2>About This Portfolio</h2>
+  <p><strong>Prepared by:</strong> Divan Gerber &mdash; Independent Portfolio Exercise.</p>
+  <p>This page is part of a self-directed learning project built to demonstrate practical Governance, Risk &amp; Compliance and IT Audit capability. &ldquo;MedRetail Group South Africa&rdquo; and its &ldquo;Enterprise Operations &amp; Service Governance Office&rdquo; are fictional constructs created for this exercise. MedRetail, its services, staff names, incidents, and all figures are entirely fictional, as are the vendors Pellion Labels and Corvane Data. Some other vendor and product names (SAP, Microsoft, Dimension Data, Clickatell, Netstar, Axis Communications, AWS, Power BI) are real companies used only as scenario context; every SLA figure, ticket, credit, and contract date attributed to them is invented and says nothing about their actual performance. The dashboard is a static design prototype, not a live system. This is not a role or office Divan Gerber has held, and no real individual or employer data has been used.</p>
+</section>
+
+</body>
+</html>
